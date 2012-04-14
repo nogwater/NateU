@@ -3,7 +3,9 @@
 
 // calculates the end time for a given expression and start time
 var endTime = function (time, expr) {
-    if (expr.tag === 'note') {
+    if (expr.tag === 'rest') {
+    	return time + expr.dur;
+    } else if (expr.tag === 'note') {
         return time + expr.dur;
     } else if (expr.tag === 'seq') {
         return time + endTime(0, expr.left) + endTime(0, expr.right);
@@ -19,7 +21,9 @@ var compile = function (musexpr, startTime) {
     if (!startTime) { startTime = 0; }
     var noteExpr = [];
     var noteRight, i;
-    if (musexpr.tag === 'note') {
+    if (musexpr.tag === 'rest') {
+    	// nothing to add
+    } else if (musexpr.tag === 'note') {
         noteExpr.push({ tag: 'note', pitch: musexpr.pitch, start: startTime, dur: musexpr.dur });
     } else if (musexpr.tag === 'seq') {
         noteExpr = compile(musexpr.left, startTime);
