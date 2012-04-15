@@ -13,6 +13,8 @@ var endTime = function (time, expr) {
         var durLeft = endTime(0, expr.left);
         var durRight = endTime(0, expr.right);
         return time + Math.max(durLeft, durRight) ;
+    } else if (expr.tag === 'repeat') {
+    	return time + (expr.count * endTime(0, expr.section));
     }
 };
 
@@ -47,6 +49,11 @@ var compile = function (musexpr, startTime) {
         for (i = 0; i < noteRight.length; i++) {
             noteExpr.push(noteRight[i]);
         }
+    } else if (musexpr.tag === 'repeat') {
+    	for (i = 0; i < musexpr.count; i++) {
+    		noteExpr.push(compile(musexpr.section, startTime));
+    		startTime += endTime(0, musexpr.section);
+    	}
     }
     return noteExpr;
 };
@@ -62,7 +69,12 @@ var melody_mus =
       right:
        { tag: 'seq',
          left: { tag: 'note', pitch: 'c4', dur: 500 },
-         right: { tag: 'note', pitch: 'd4', dur: 500 } } };
+         right: { tag: 'repeat',
+         	section: { tag: 'note', pitch: 'd4', dur: 500 },
+         	count: 5 
+         	}
+    	 } 
+     };
 
 console.log('melody_mus:');
 console.log(melody_mus);
