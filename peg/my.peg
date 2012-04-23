@@ -1,0 +1,13 @@
+
+start = expression
+
+expression = a:atom " "*       { return a; }
+  / "()" " "*                  { return []; }
+  / "(" list:elist ")" " "*    { return list; }
+
+elist = first:expression rest:(expression)* 
+                               { rest.splice(0, 0, first); return rest; }
+
+atom = chars:validchar+        { return chars.join(""); }
+
+validchar = [0-9a-zA-Z_?!+-=@#$%^&*/.]
