@@ -1,7 +1,8 @@
 
 start = expression
 
-expression = a:atom " "*        { return a; }
+expression = "'" e:expression   { return ["quote", e]; }
+  / a:atom " "*                 { return a; }
   /  "()" " "*                  { return []; }
   /  "(" list:elist ")" " "*    { return list; }
   /  " "+ e:expression          { return e; }

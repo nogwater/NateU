@@ -19,5 +19,8 @@ assert.deepEqual( parse("(a  b  (c ) ) "), ["a", "b", ["c"]] );
 // Extra leading whitespace
 assert.deepEqual( parse(" (a  b  (  c ) ) "), ["a", "b", ["c"]] );
 
+// Quote
+assert.deepEqual( parse("'(1 2 3)"), parse("(quote (1 2 3))") );
+
 console.log("-----------------------");
 console.log("PASS");
