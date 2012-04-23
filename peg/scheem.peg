@@ -12,7 +12,7 @@ elist = first:expression rest:(expression)*
 
 atom = chars:validchar+        { return chars.join(""); }
 
-validchar = [0-9a-zA-Z_?!+-=@#$%^&*/.]
+validchar = [0-9a-zA-Z_?!+=@#$%^&*/.-]
 
 comment =
     [ \t\r]* "\n;;" [^\n]* "\n"

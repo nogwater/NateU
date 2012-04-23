@@ -34,7 +34,9 @@ assert.deepEqual( parse("(a\nb\nc)"), ["a", "b", "c"], "Newline whitespace");
 
 // Comment lines
 // Note: ";;" must be the first character in the line to be a newline
-assert.deepEqual( parse("(keep;; ;; \n;; comment line\natom\n)"), ["keep;;", ";;", "atom"])
+// Technically ';' isn't allowed in atoms
+//assert.deepEqual( parse("(keep;; ;; \n;; comment line\natom\n)"), ["keep;;", ";;", "atom"])
+assert.deepEqual( parse("(keep \n;; comment line\natom\n)"), ["keep", "atom"])
 
 console.log("-----------------------");
 console.log("PASS");
