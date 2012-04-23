@@ -1,9 +1,10 @@
 
 start = expression
 
-expression = a:atom " "*       { return a; }
-  / "()" " "*                  { return []; }
-  / "(" list:elist ")" " "*    { return list; }
+expression = a:atom " "*        { return a; }
+  /  "()" " "*                  { return []; }
+  /  "(" list:elist ")" " "*    { return list; }
+  /  " "+ e:expression          { return e; }
 
 elist = first:expression rest:(expression)* 
                                { rest.splice(0, 0, first); return rest; }

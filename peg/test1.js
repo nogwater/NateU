@@ -8,5 +8,16 @@ var data = fs.readFileSync('my.peg', 'utf-8');
 console.log(data);
 // Create my parser
 var parse = PEG.buildParser(data).parse;
-// Do a tst
+// Do a test
+
+// Simple list
 assert.deepEqual( parse("(a b c)"), ["a", "b", "c"] );
+
+// Extra trailing whitespace
+assert.deepEqual( parse("(a  b  (c ) ) "), ["a", "b", ["c"]] );
+
+// Extra leading whitespace
+assert.deepEqual( parse(" (a  b  (  c ) ) "), ["a", "b", ["c"]] );
+
+console.log("-----------------------");
+console.log("PASS");
