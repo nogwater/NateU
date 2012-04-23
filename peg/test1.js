@@ -22,5 +22,8 @@ assert.deepEqual( parse(" (a  b  (  c ) ) "), ["a", "b", ["c"]] );
 // Quote
 assert.deepEqual( parse("'(1 2 3)"), parse("(quote (1 2 3))") );
 
+// Newline as whitespace
+assert.deepEqual( parse("(a\nb\nc)"), ["a", "b", "c"] );
+
 console.log("-----------------------");
 console.log("PASS");
