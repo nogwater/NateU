@@ -1,9 +1,11 @@
-
 start = expression
 
-expression = a:atom " "*       { return a; }
-  / "()" " "*                  { return []; }
-  / "(" list:elist ")" " "*    { return list; }
+expression =
+    "'" e:expression ws*       { return ["quote", e]; }
+  / a:atom ws*                 { return a; }
+  /  "()" ws*                  { return []; }
+  /  "(" list:elist ")" ws*    { return list; }
+  /  ws+ e:expression          { return e; }
 
 elist = first:expression rest:(expression)* 
                                { rest.splice(0, 0, first); return rest; }
@@ -11,3 +13,10 @@ elist = first:expression rest:(expression)*
 atom = chars:validchar+        { return chars.join(""); }
 
 validchar = [0-9a-zA-Z_?!+-=@#$%^&*/.]
+
+comment =
+    [ \t\r]* "\n;;" [^\n]* "\n"
+
+ws =
+    comment ws*
+  / [ \t\n\r] ws*

@@ -3,7 +3,7 @@ var assert = require('assert');
 var fs = require('fs'); // for loading files
 
 // Read file contents
-var data = fs.readFileSync('my.peg', 'utf-8');
+var data = fs.readFileSync('scheem.peg', 'utf-8');
 // Show the PEG grammar file
 console.log(data);
 // Create my parser
