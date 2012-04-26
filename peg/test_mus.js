@@ -8,9 +8,11 @@ var data = fs.readFileSync('mus.peg', 'utf-8');
 //console.log(data);
 // Create my parser
 var parse = PEG.buildParser(data).parse;
-// Do a test
+// Do tests
 
-// Simple stuff
+assert.deepEqual( parse("a4", "pitch"), "a4", "single pitch")
+
+
 //console.log(parse("play a4 for 150"));
 assert.deepEqual( parse("play a4 for 150"), { tag: 'note', pitch: 'a4', dur: 150 }, "Play command");
 
@@ -34,3 +36,6 @@ assert.deepEqual(parse("5 times ( play a4 for 150 rest for 150 )"), { tag: 'repe
      left: { tag: 'note', pitch: 'a4', dur: 150 },
      right: { tag: 'rest', duration: 150 } },
   count: 5 }, "Repeat a sequence five times");
+
+
+// console.log(parse("play a4 for 150 rest for 150 play a4 for 150 rest for 150 play a4 for 150"), "five commands in a row");
