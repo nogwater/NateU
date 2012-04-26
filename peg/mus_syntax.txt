@@ -1,0 +1,42 @@
+MUS Syntax
+
+
+
+How are notes specified? What about different octaves? What about rests?
+How will durations work? You want to be user friendly.
+How do harmonies work?
+For repeats you need some way to specify the start and end point and the number of times to repeat.
+
+Maybe something like:
+
+  play a4 for 250
+  rest for 250
+  together (
+    play c4 for 500
+    play e4 for 500
+    play g4 for 500
+  )
+  5 times (
+    play c4 for 250
+    rest for 250
+  )
+
+
+
+Example:
+
+var melody_mus = 
+    { tag: 'seq',
+      left: 
+       { tag: 'seq',
+         left: { tag: 'note', pitch: 'a4', dur: 250 },
+         right: { tag: 'note', pitch: 'b4', dur: 250 } },
+      right:
+       { tag: 'seq',
+         left: { tag: 'note', pitch: 'c4', dur: 500 },
+         right: { tag: 'repeat',
+                section: { tag: 'note', pitch: 'd4', dur: 500 },
+                count: 5 
+                }
+         } 
+     };

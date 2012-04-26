@@ -1,0 +1,46 @@
+
+start =
+  sequence
+
+sequence = 
+  c1:command ws+ seq:sequence
+    { return {'tag': 'seq', 'left':c1, 'right':seq}; }
+/ c1:command ws+ c2:command
+    { return {'tag': 'seq', 'left':c1, 'right':c2}; }
+/ c1:command
+    { return c1; }
+
+command =
+  playcommand
+/ restcommand
+/ parcommand
+/ repeatcommand
+
+playcommand = 
+  "play" ws+ pitch:pitch ws+ "for" ws+ duration:duration
+    { return {'tag':'note', 'pitch': pitch, 'dur':duration}; }
+
+restcommand =
+  "rest" ws+ "for" ws+ duration:duration
+    { return {'tag':'rest',  'duration':duration}; }
+
+parcommand =
+  "together" ws+ "(" ws+ c1:command ws+ c2:command ws+ ")"
+    { return {'tag':'par', 'left': c1, 'right': c2 }; }
+
+repeatcommand =
+  count:integer ws+ "times" ws+ "(" ws+ seq:sequence ws+ ")"
+    { return {'tag':'repeat', 'section': seq, 'count': count}; }
+
+ws =
+  [ \t\r\n]
+
+pitch = note:note octave:octave { return note + octave; }
+
+note = [a-g]
+
+octave = integer
+
+duration = integer
+
+integer = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
