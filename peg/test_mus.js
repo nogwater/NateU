@@ -40,14 +40,16 @@ assert.deepEqual(parse("5 times ( play a4 for 150 rest for 150 )"), { tag: 'repe
 
 // console.log(parse("play a4 for 150 rest for 150 play a4 for 150 rest for 150 play a4 for 150"), "five commands in a row");
 
-console.log(parse("play a4 for 250"
-	+ "\nrest for 250"
-	+ "\ntogether ("
-	+ "\n  play c4 for 500"
-	+ "\n  play e4 for 500"
-	+ "\n)"
-	+ "\n5 times ("
-	+ "\n  play c4 for 250"
-	+ "\n  rest for 250"
-	+ "\n)"
-));
+// console.log(parse("play a4 for 250"
+// 	+ "\nrest for 250"
+// 	+ "\ntogether ("
+// 	+ "\n  play c4 for 500"
+// 	+ "\n  play e4 for 500"
+// 	+ "\n)"
+// 	+ "\n5 times ("
+// 	+ "\n  play c4 for 250"
+// 	+ "\n  rest for 250"
+// 	+ "\n)"
+// ));
+
+console.log(parse("together ( rest for 150 )", "togethercommand"));
