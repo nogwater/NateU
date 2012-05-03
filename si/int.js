@@ -11,7 +11,7 @@ var parse = PEG.buildParser(data).parse;
 // Do tests
 
 var evalScheem = function (expr, env) {
-    var name, value, i;
+    var name, value, i, element, list;
     // Numbers evaluate to themselves
     if (typeof expr === 'number') {
         return expr;
@@ -60,6 +60,11 @@ var evalScheem = function (expr, env) {
                 return '#t';
             }
             return '#f';
+        case 'cons':
+        	element = evalScheem(expr[1], env);
+        	list = evalScheem(expr[2], env);
+        	list.splice(0, 0, element);
+        	return list;
     }
 };
 
@@ -113,12 +118,12 @@ var env = {};
 var result = evalScheem(prg, env);
 assert.deepEqual(result, '#f', 'Less than check; false');
 
-var prg = ['cons', 1, ['quote', 2, 3]];
+var prg = ['cons', 1, ['quote', [2, 3]]];
 var env = {};
 var result = evalScheem(prg, env);
 assert.deepEqual(result, [1, 2, 3], 'cons; number');
 
-var prg = ['cons', ['quote', 1, 2], ['quote', 3, 4]];
+var prg = ['cons', ['quote', [1, 2]], ['quote', [3, 4]]];
 var env = {};
 var result = evalScheem(prg, env);
 assert.deepEqual(result, [[1, 2], 3, 4], 'cons; list');
