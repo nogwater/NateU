@@ -61,17 +61,22 @@ var evalScheem = function (expr, env) {
             }
             return '#f';
         case 'cons':
-        	element = evalScheem(expr[1], env);
-        	list = evalScheem(expr[2], env);
-        	list.splice(0, 0, element);
-        	return list;
+            element = evalScheem(expr[1], env);
+            list = evalScheem(expr[2], env);
+            list.splice(0, 0, element);
+            return list;
         case 'car':
-        	result = evalScheem(expr[1], env)[0];
-        	return result;
+            result = evalScheem(expr[1], env)[0];
+            return result;
         case 'cdr':
-        	list = evalScheem(expr[1], env);
-        	list.splice(0, 1);
-        	return list;
+            list = evalScheem(expr[1], env);
+            list.splice(0, 1);
+            return list;
+        case 'if':
+            if (evalScheem(expr[1], env) === '#t') {
+            	return evalScheem(expr[2], env);
+            }
+            return evalScheem(expr[3], env);
     }
 };
 
@@ -145,3 +150,12 @@ var env = {};
 var result = evalScheem(prg, env);
 assert.deepEqual(result, [2, 3], 'cdr [1,2,3] -> [2,3]');
 
+var prg = ['if', ['<', 'x', 5], 0, 10];
+var env = {x: 1};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, 0, 'x < 5 ? 0 : 10');
+
+var prg = ['if', ['<', 'x', 5], 0, 10];
+var env = {x: 6};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, 10, 'x < 5 ? 0 : 10');
