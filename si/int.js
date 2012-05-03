@@ -11,7 +11,7 @@ var parse = PEG.buildParser(data).parse;
 // Do tests
 
 var evalScheem = function (expr, env) {
-    var name, value;
+    var name, value, i;
     // Numbers evaluate to themselves
     if (typeof expr === 'number') {
         return expr;
@@ -42,6 +42,12 @@ var evalScheem = function (expr, env) {
             // should probably error if env[name] is undefined
             env[name] = value;
             return 0; // why not return the value?
+        case 'begin':
+            result = 0; // what should this default to?
+            for (i = 1; i < expr.length; i++) {
+                result = evalScheem(expr[i], env);
+            }
+            return result;
     }
 };
 
@@ -58,3 +64,12 @@ var env = {a: 2, b: 7};
 var result = evalScheem(['set!', 'a', 3], env);
 assert.deepEqual(env , {a: 3, b: 7}, 'set! a variable');
 assert.deepEqual(result, 0, 'set! result is 0')
+
+var prg = ['begin',
+            ['define', 'x', 5],
+            ['set!', 'x', ['+', 'x', 1]],
+            ['+', 2, 'x']];
+var env = {a: 1, b: 7};
+var result = evalScheem(prg, env);
+assert.deepEqual(env, {a: 1, b: 7, x: 6}, 'Little program, env');
+assert.deepEqual(result, 8, 'Little program, result');
