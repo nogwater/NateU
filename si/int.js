@@ -51,15 +51,15 @@ var evalScheem = function (expr, env) {
         case 'quote':
             return expr[1];
         case '=':
-        	if (evalScheem(expr[1], env) === evalScheem(expr[2], env)) {
-        		return '#t';
-        	}
-        	return '#f';
+            if (evalScheem(expr[1], env) === evalScheem(expr[2], env)) {
+                return '#t';
+            }
+            return '#f';
         case '<':
-        	if (evalScheem(expr[1], env) < evalScheem(expr[2], env)) {
-        		return '#t';
-        	}
-        	return '#f';
+            if (evalScheem(expr[1], env) < evalScheem(expr[2], env)) {
+                return '#t';
+            }
+            return '#f';
     }
 };
 
@@ -113,4 +113,13 @@ var env = {};
 var result = evalScheem(prg, env);
 assert.deepEqual(result, '#f', 'Less than check; false');
 
+var prg = ['cons', 1, ['quote', 2, 3]];
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, [1, 2, 3], 'cons; number');
+
+var prg = ['cons', ['quote', 1, 2], ['quote', 3, 4]];
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, [[1, 2], 3, 4], 'cons; list');
 
