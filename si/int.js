@@ -48,6 +48,8 @@ var evalScheem = function (expr, env) {
                 result = evalScheem(expr[i], env);
             }
             return result;
+        case 'quote':
+        	return expr[1];
     }
 };
 
@@ -71,5 +73,13 @@ var prg = ['begin',
             ['+', 2, 'x']];
 var env = {a: 1, b: 7};
 var result = evalScheem(prg, env);
-assert.deepEqual(env, {a: 1, b: 7, x: 6}, 'Little program, env');
-assert.deepEqual(result, 8, 'Little program, result');
+assert.deepEqual(env, {a: 1, b: 7, x: 6}, 'Little program; env');
+assert.deepEqual(result, 8, 'Little program; result');
+
+var prg = ['set!', 'x', ['quote', [1, '#t']]]; // set x to the list [1, '#t']
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(env, {x: [1, '#t']}, 'Simple quote; env');
+assert.deepEqual(result, 0, 'Simple quote; result');
+
+
