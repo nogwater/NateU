@@ -65,6 +65,13 @@ var evalScheem = function (expr, env) {
         	list = evalScheem(expr[2], env);
         	list.splice(0, 0, element);
         	return list;
+        case 'car':
+        	result = evalScheem(expr[1], env)[0];
+        	return result;
+        case 'cdr':
+        	list = evalScheem(expr[1], env);
+        	list.splice(0, 1);
+        	return list;
     }
 };
 
@@ -127,4 +134,14 @@ var prg = ['cons', ['quote', [1, 2]], ['quote', [3, 4]]];
 var env = {};
 var result = evalScheem(prg, env);
 assert.deepEqual(result, [[1, 2], 3, 4], 'cons; list');
+
+var prg = ['car', ['quote', [1, 2, 3]]];
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, 1, 'car [1,2,3] -> 1');
+
+var prg = ['cdr', ['quote', [1, 2, 3]]];
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, [2, 3], 'cdr [1,2,3] -> [2,3]');
 
