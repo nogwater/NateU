@@ -50,6 +50,16 @@ var evalScheem = function (expr, env) {
             return result;
         case 'quote':
             return expr[1];
+        case '=':
+        	if (evalScheem(expr[1], env) === evalScheem(expr[2], env)) {
+        		return '#t';
+        	}
+        	return '#f';
+        case '<':
+        	if (evalScheem(expr[1], env) < evalScheem(expr[2], env)) {
+        		return '#t';
+        	}
+        	return '#f';
     }
 };
 
@@ -85,7 +95,22 @@ assert.deepEqual(result, 0, 'Simple quote; result');
 var prg = ['=', 2, ['+', 1, 1]];
 var env = {};
 var result = evalScheem(prg, env);
-assert.deepEqual(result, '#t', 'Equality check');
+assert.deepEqual(result, '#t', 'Equality check; true');
 
+var prg = ['=', 1, ['+', 1, 1]];
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, '#f', 'Equality check; false');
+
+
+var prg = ['<', 1, ['+', 1, 1]];
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, '#t', 'Less than check; true');
+
+var prg = ['<', 2, ['+', 1, 1]];
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, '#f', 'Less than check; false');
 
 
