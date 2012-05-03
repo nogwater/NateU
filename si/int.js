@@ -49,7 +49,7 @@ var evalScheem = function (expr, env) {
             }
             return result;
         case 'quote':
-        	return expr[1];
+            return expr[1];
     }
 };
 
@@ -81,5 +81,11 @@ var env = {};
 var result = evalScheem(prg, env);
 assert.deepEqual(env, {x: [1, '#t']}, 'Simple quote; env');
 assert.deepEqual(result, 0, 'Simple quote; result');
+
+var prg = ['=', 2, ['+', 1, 1]];
+var env = {};
+var result = evalScheem(prg, env);
+assert.deepEqual(result, '#t', 'Equality check');
+
 
 
