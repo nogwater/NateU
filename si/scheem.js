@@ -4,7 +4,7 @@
 var scheem = {};
 
 scheem.eval = function (expr, env) {
-    var name, value, i, element, list;
+    var name, value, result, i, element, list;
     // Numbers evaluate to themselves
     if (typeof expr === 'number') {
         return expr;
