@@ -91,3 +91,12 @@ var prg = ['if', ['<', 'x', 5], 0, 10];
 var env = {x: 6};
 var result = scheem.eval(prg, env);
 assert.deepEqual(result, 10, 'x < 5 ? 0 : 10');
+
+//====================//
+// Rough parser tests //
+//====================//
+var result = parse("(+ 2 (* 3 4))");
+assert.deepEqual(result, ['+', 2, ['*', 3, 4]], 'parse nested lists with numbers');
+
+
+

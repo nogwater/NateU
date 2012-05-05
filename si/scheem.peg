@@ -2,6 +2,7 @@ start = expression
 
 expression =
     "'" e:expression ws*       { return ["quote", e]; }
+  / n:number ws*               { return n; }
   / a:atom ws*                 { return a; }
   /  "()" ws*                  { return []; }
   /  "(" list:elist ")" ws*    { return list; }
@@ -10,6 +11,7 @@ expression =
 elist = first:expression rest:(expression)* 
                                { rest.splice(0, 0, first); return rest; }
 
+number = digits:[0-9]+         { return parseInt(digits.join("")); }
 atom = chars:validchar+        { return chars.join(""); }
 
 validchar = [0-9a-zA-Z_?!+=@#$%^&*/.-]
