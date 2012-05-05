@@ -342,6 +342,84 @@ suite('conditional', function () {
     });
 });
 
+suite('parse', function () {
+    test('a number', function () {
+        assert.deepEqual(
+            scheem.parse('42')
+            , 42
+        );
+    });
+    test('a variable', function () {
+        assert.deepEqual(
+            scheem.parse('x')
+            , 'x'
+        );
+    });
+    test('an empty list', function () {
+        assert.deepEqual(
+            scheem.parse('()')
+            , []
+        );
+    });
+    test('a list of atoms', function () {
+        assert.deepEqual(
+            scheem.parse("(a b c)")
+            , ['a', 'b', 'c']
+        );
+    });
+    test('a list of numbers', function () {
+        assert.deepEqual(
+            scheem.parse("(1 2 3)")
+            , [1, 2, 3]
+        );
+    });
+    test('a little math', function () {
+        assert.deepEqual(
+            scheem.parse("(+ 2 (* 3 4))")
+            , ['+', 2, ['*', 3, 4]]
+        );
+    });
+    test('a quoted atom', function () {
+        assert.deepEqual(
+            scheem.parse("'#t")
+            , ['quote', '#t']
+        );
+    });
+    test('a quoted list', function () {
+        assert.deepEqual(
+            scheem.parse("'(1 2)")
+            , ['quote', [1, 2]]
+        );
+    });
+});
+
+suite('evaluate string', function () {
+    test('a number', function () {
+        assert.deepEqual(
+            scheem.evalString("42")
+            , 42
+        );
+    });
+    test('a little math', function () {
+        assert.deepEqual(
+            scheem.evalString("(+ 2 (* 3 4))")
+            , 14
+        );
+    });
+    test('the works (define, set, add)', function () {
+        var env = {};
+        var result = scheem.evalString("(begin (define x 1) (define y 2) (set! x y) (+ y x))", env);
+        assert.deepEqual(
+            env
+            , {'x': 2, 'y': 2}
+        );
+        assert.deepEqual(
+            result
+            , 4
+        );
+    });
+});
+
   </script>
   <script>
     $(function(){
