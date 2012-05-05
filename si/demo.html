@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+	<title>Scheem Demo</title>
+	<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<h3>Enter your Scheem code here:</h3>
+<textarea id="source" cols="80" rows="30">
+(begin
+	(define x 1)
+	(define y 2)
+	(set! x y)
+	(+ y x)
+)
+</textarea><br />
+<input id="run" type="button" value="Run" /><br />
+<div id="log">
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="./scheem.js"></script>
+<script type="text/javascript">
+
+$(function () {
+	$('#run').click(run);
+});
+
+function run() {
+	$('#log').empty();
+
+	try {
+		log(scheem.evalString($('#source').val()));
+	} catch (e) {
+		log(e);
+	}	
+}
+
+function log(msg) {
+	$('#log').append(msg + '<br>');
+}
+</script>
+</body>
+</html>
