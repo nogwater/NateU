@@ -8,7 +8,7 @@
   <script src="http://nathansuniversity.com/js/mocha.js"></script>
   <script>mocha.setup('tdd')</script>
   <!-- my Scheem interpreter -->
-  <script src="int.js"></script>
+  <script src="./scheem.js"></script>
   <script>
 var assert = chai.assert;
 
@@ -17,19 +17,19 @@ var assert = chai.assert;
 suite('quote', function() {
     test('a number', function() {
         assert.deepEqual(
-            evalScheem(['quote', 3], {}),
+            scheem.eval(['quote', 3], {}),
             3
         );
     });
     test('an atom', function() {
         assert.deepEqual(
-            evalScheem(['quote', 'dog'], {}),
+            scheem.eval(['quote', 'dog'], {}),
             'dog'
         );
     });
     test('a list', function() {
         assert.deepEqual(
-            evalScheem(['quote', [1, 2, 3]], {}),
+            scheem.eval(['quote', [1, 2, 3]], {}),
             [1, 2, 3]
         );
     });
@@ -37,25 +37,25 @@ suite('quote', function() {
 suite('add', function() {
     test('two plus two', function() {
         assert.deepEqual(
-            evalScheem(['+', 2, 2], {}),
+            scheem.eval(['+', 2, 2], {}),
             4
         );
     });
     test('two numbers', function() {
         assert.deepEqual(
-            evalScheem(['+', 3, 5], {}),
+            scheem.eval(['+', 3, 5], {}),
             8
         );
     });
     test('a number and an expression', function() {
         assert.deepEqual(
-            evalScheem(['+', 3, ['+', 2, 2]], {}),
+            scheem.eval(['+', 3, ['+', 2, 2]], {}),
             7
         );
     });
     test('a dog and a cat', function() {
         assert.deepEqual(
-            evalScheem(['+', 'dog', 'cat'], {}),
+            scheem.eval(['+', 'dog', 'cat'], {}),
             42
         );
     });

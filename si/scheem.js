@@ -1,7 +1,9 @@
 // my Scheem interpreter
 // exposes the eval function
 
-var evalScheem = function (expr, env) {
+var scheem = {};
+
+scheem.eval = function (expr, env) {
     var name, value, i, element, list;
     // Numbers evaluate to themselves
     if (typeof expr === 'number') {
@@ -14,66 +16,66 @@ var evalScheem = function (expr, env) {
     // Look at head of list for operation
     switch (expr[0]) {
         case '+':
-            return evalScheem(expr[1], env) + evalScheem(expr[2], env);
+            return scheem.eval(expr[1], env) + scheem.eval(expr[2], env);
         case '-':
-            return evalScheem(expr[1], env) - evalScheem(expr[2], env);
+            return scheem.eval(expr[1], env) - scheem.eval(expr[2], env);
         case '*':
-            return evalScheem(expr[1], env) * evalScheem(expr[2], env);
+            return scheem.eval(expr[1], env) * scheem.eval(expr[2], env);
         case '/':
-            return evalScheem(expr[1], env) / evalScheem(expr[2], env);
+            return scheem.eval(expr[1], env) / scheem.eval(expr[2], env);
         case 'define':
             name = expr[1]; // might be cool to allow references (expressions that return strings?)
-            value = evalScheem(expr[2], env);
+            value = scheem.eval(expr[2], env);
             // should probably error if env[name] is NOT undefined
             env[name] = value;
             return 0; // why not return the value?
         case 'set!':
             name = expr[1];
-            value = evalScheem(expr[2], env);
+            value = scheem.eval(expr[2], env);
             // should probably error if env[name] is undefined
             env[name] = value;
             return 0; // why not return the value?
         case 'begin':
             result = 0; // what should this default to?
             for (i = 1; i < expr.length; i++) {
-                result = evalScheem(expr[i], env);
+                result = scheem.eval(expr[i], env);
             }
             return result;
         case 'quote':
             return expr[1];
         case '=':
-            if (evalScheem(expr[1], env) === evalScheem(expr[2], env)) {
+            if (scheem.eval(expr[1], env) === scheem.eval(expr[2], env)) {
                 return '#t';
             }
             return '#f';
         case '<':
-            if (evalScheem(expr[1], env) < evalScheem(expr[2], env)) {
+            if (scheem.eval(expr[1], env) < scheem.eval(expr[2], env)) {
                 return '#t';
             }
             return '#f';
         case 'cons':
-            element = evalScheem(expr[1], env);
-            list = evalScheem(expr[2], env);
+            element = scheem.eval(expr[1], env);
+            list = scheem.eval(expr[2], env);
             list.splice(0, 0, element);
             return list;
         case 'car':
-            result = evalScheem(expr[1], env)[0];
+            result = scheem.eval(expr[1], env)[0];
             return result;
         case 'cdr':
-            list = evalScheem(expr[1], env);
+            list = scheem.eval(expr[1], env);
             list.splice(0, 1);
             return list;
         case 'if':
-            if (evalScheem(expr[1], env) === '#t') {
-                return evalScheem(expr[2], env);
+            if (scheem.eval(expr[1], env) === '#t') {
+                return scheem.eval(expr[2], env);
             }
-            return evalScheem(expr[3], env);
+            return scheem.eval(expr[3], env);
     }
 };
 
 // for node.js
-if (module) {
+if (typeof module === 'object') {
     module.exports = {
-        'eval': evalScheem
+        'eval': scheem.eval
     };
 }
