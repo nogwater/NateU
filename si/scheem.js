@@ -873,9 +873,11 @@ scheem.eval = function (expr, env) {
 };
 
 scheem.evalString = function (scheemString, env) {
-    env |= {};
+    if (!env) {
+        env = {};
+    };
     var ast = scheem.parse(scheemString);
-    var result = eval(ast, env)
+    var result = scheem.eval(ast, env)
     return result;
 };
 
