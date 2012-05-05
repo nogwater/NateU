@@ -55,6 +55,12 @@ suite('quote', function() {
     });
 });
 suite('add', function() {
+    test('two plus two', function() {
+        assert.deepEqual(
+            evalScheem(['+', 2, 2], {}),
+            4
+        );
+    });
     test('two numbers', function() {
         assert.deepEqual(
             evalScheem(['+', 3, 5], {}),

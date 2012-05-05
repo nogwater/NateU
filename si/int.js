@@ -74,7 +74,7 @@ var evalScheem = function (expr, env) {
             return list;
         case 'if':
             if (evalScheem(expr[1], env) === '#t') {
-            	return evalScheem(expr[2], env);
+                return evalScheem(expr[2], env);
             }
             return evalScheem(expr[3], env);
     }
