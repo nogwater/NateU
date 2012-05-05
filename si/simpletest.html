@@ -33,12 +33,21 @@ suite('add', function() {
             7
         );
     });
-    // test('a dog and a cat', function() {
-    //     assert.deepEqual(
-    //         scheem.eval(['+', 'dog', 'cat'], {}),
-    //         42
-    //     );
-    // });
+    test('Error: not enough parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['+', 1], {});
+        });
+    });
+    test('Error: too many parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['+', 1, 2, 3], {});
+        });
+    });
+    test('Error: a dog and a cat', function() {
+        assert.throws(function () {
+            scheem.eval(['+', 'dog', 'cat'], {});
+        });
+    });
 });
 suite('subtract', function () {
     test('two numbers', function () {
@@ -52,6 +61,16 @@ suite('subtract', function () {
             scheem.eval(['-', ['-', 1, 1], ['-', 1, 0]], {})
             , -1
         );
+    });
+    test('Error: not enough parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['-', 1], {});
+        });
+    });
+    test('Error: too many parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['-', 1, 2, 3], {});
+        });
     });
 });
 suite('multiplication', function () {
@@ -67,6 +86,16 @@ suite('multiplication', function () {
             , 81
         );
     });
+    test('Error: not enough parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['*', 1], {});
+        });
+    });
+    test('Error: too many parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['*', 1, 2, 3], {});
+        });
+    });
 });
 suite('division', function () {
     test('two numbers', function () {
@@ -81,6 +110,21 @@ suite('division', function () {
             , 1
         );
     });
+    test('Error: not enough parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['/', 1], {});
+        });
+    });
+    test('Error: too many parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['/', 1, 2, 3], {});
+        });
+    });
+    test('Error: divide by zero', function() {
+        assert.throws(function () {
+            scheem.eval(['/', 1, 0], {});
+        });
+    });
 });
 suite('variable', function () {
     test('definition', function () {
@@ -89,11 +133,21 @@ suite('variable', function () {
         assert.deepEqual(env, {'x': 5});
         assert.deepEqual(result, 0);
     });
+    test('Error: redefining', function () {
+        assert.throws(function () {
+            scheem.eval(['define', 'x', 5], {'x': 5});
+        });
+    });
     test('setting', function () {
-        var env = {};
+        var env = {'x': 1};
         var result = scheem.eval(['set!', 'x', 5], env);
         assert.deepEqual(env, {'x': 5});
         assert.deepEqual(result, 0);
+    });
+    test('Error: setting when undefined', function () {
+        assert.throws(function () {
+            scheem.eval(['set!', 'x', 5], {});
+        });
     });
     test('overwriting', function () {
         var env = {'x': 5};
@@ -146,6 +200,16 @@ suite('quote', function() {
             scheem.eval(['quote', [1, 2, 3]], {}),
             [1, 2, 3]
         );
+    });
+    test('Error: not enough parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['quote'], {});
+        });
+    });
+    test('Error: too many parameters', function() {
+        assert.throws(function () {
+            scheem.eval(['quote', 1, 2], {});
+        });
     });
 });
 suite('compare', function () {
@@ -220,6 +284,24 @@ suite('list manipulation', function () {
         assert.deepEqual(env, {'x': [1, 2, 3]});
         assert.deepEqual(result, [1, 2, 3]);
     });
+    test('Error: cons with non-list', function () {
+        var env = {};
+        assert.throws(function () {
+            scheem.eval(['cons', 1, 2], env);
+        });
+    });
+    test('Error: car on non-list', function () {
+        var env = {};
+        assert.throws(function () {
+            scheem.eval(['car', 1], env);
+        });
+    });
+    test('Error: cdr on non-list', function () {
+        var env = {};
+        assert.throws(function () {
+            scheem.eval(['cdr', 1], env);
+        });
+    });
 });
 suite('conditional', function () {
     test('if true', function () {
@@ -234,17 +316,29 @@ suite('conditional', function () {
         assert.deepEqual(env, {});
         assert.deepEqual(result, 2);
     });
-    test('state change when true', function () {
+    test('define when true', function () {
         var env = {};
-        var result = scheem.eval(['if', ['=', 1, 1], ['set!', 'x', 1], ['set!', 'y', 2]], env);
+        var result = scheem.eval(['if', ['=', 1, 1], ['define', 'x', 1], ['define', 'y', 2]], env);
         assert.deepEqual(env, {'x': 1});
         assert.deepEqual(result, 0);
     });
-    test('state change when false', function () {
+    test('define when false', function () {
         var env = {};
-        var result = scheem.eval(['if', ['=', 1, 2], ['set!', 'x', 1], ['set!', 'y', 2]], env);
+        var result = scheem.eval(['if', ['=', 1, 2], ['define', 'x', 1], ['define', 'y', 2]], env);
         assert.deepEqual(env, {'y': 2});
         assert.deepEqual(result, 0);
+    });
+    test('Error: not enough parameters for if', function () {
+        var env = {};
+        assert.throws(function () {
+            scheem.eval(['if', ['quote', '#t'], 1], env);
+        });
+    });
+    test('Error: too many parameters for if', function () {
+        var env = {};
+        assert.throws(function () {
+            scheem.eval(['if', ['quote', '#t'], 1, 2, 3], env);
+        });
     });
 });
 

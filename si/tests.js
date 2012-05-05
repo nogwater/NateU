@@ -36,7 +36,7 @@ assert.deepEqual(env, {a: 1, b: 7, x: 6}, 'Little program; env');
 assert.deepEqual(result, 8, 'Little program; result');
 
 var prg = ['set!', 'x', ['quote', [1, '#t']]]; // set x to the list [1, '#t']
-var env = {};
+var env = {'x': 0};
 var result = scheem.eval(prg, env);
 assert.deepEqual(env, {x: [1, '#t']}, 'Simple quote; env');
 assert.deepEqual(result, 0, 'Simple quote; result');
