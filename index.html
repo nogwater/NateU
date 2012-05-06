@@ -1,1 +1,66 @@
-hello world
+<!DOCTYPE html>
+<head>
+	<title>Scheem Demo</title>
+	<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<div id="editor">
+	<h2>Scheem</h2>
+	<textarea id="source" cols="80" rows="30">
+(begin
+	(define x 1)
+	(define y 2)
+	(set! x y)
+	(+ y x)
+)
+	</textarea><br />
+	<input id="parse" type="button" value="Parse" />&nbsp;
+	<input id="run" type="button" value="Run" /><br />
+</div>
+<div id="output">
+	<h2>Output</h2>
+	<div id="log">
+	</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="./scheem.js"></script>
+<script type="text/javascript">
+
+$(function () {
+	$('#parse').click(parse);
+	$('#run').click(run);
+});
+
+function parse() {
+	$('#log').empty();
+
+	try {
+		var source = $('#source').val();
+		var ast = scheem.parse(source);
+		var json = JSON.stringify(ast, null, '\t');
+		json = json.replace(/\n/g, '<br>');
+		json = json.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+		log(json);
+	} catch (e) {
+		log(e);
+	}	
+}
+
+function run() {
+	$('#log').empty();
+
+	try {
+		var source = $('#source').val();
+		var result = scheem.evalString(source);
+		log(result);
+	} catch (e) {
+		log(e);
+	}
+}
+
+function log(msg) {
+	$('#log').append(msg + '<br>');
+}
+</script>
+</body>
+</html>
