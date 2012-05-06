@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pegjs -e scheem scheem.peg parser.js

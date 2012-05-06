@@ -1,18 +1,21 @@
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Mocha Tests</title>
-    <link rel="stylesheet" href="http://nathansuniversity.com/css/mocha.css" />
-    <script src="http://nathansuniversity.com/js/jquery-1.7.1.min.js"></script>
-    <script src="http://nathansuniversity.com/js/chai.js"></script>
-    <script src="http://nathansuniversity.com/js/mocha.js"></script>
-    <script>mocha.setup('tdd')</script>
-    <!-- my Scheem interpreter -->
-    <script src="./scheem.js"></script>
-    <script>
-var assert = chai.assert;
 
-// Some unit tests
+// Test cases for scheem parser and interpreter.
+// Can be run from a web page or node.js.
+
+
+if (typeof module !== 'undefined') {
+    // In Node.js load required modules
+    var assert = require('chai').assert;
+    var PEG = require('pegjs');
+    var fs = require('fs');
+    var scheem = require('../scheem');
+    scheem.parse = PEG.buildParser(fs.readFileSync('scheem.peg', 'utf-8')).parse;
+} else {
+    // In browser assume loaded by <script>
+    var assert = chai.assert;
+}
+
+
 
 suite('add', function() {
     test('two plus two', function() {
@@ -419,15 +422,3 @@ suite('evaluate string', function () {
         );
     });
 });
-
-  </script>
-  <script>
-    $(function(){
-      mocha.run();
-    });
-  </script>
-</head>
-<body>
-  <div id="mocha"></div>
-</body>
-</html>
