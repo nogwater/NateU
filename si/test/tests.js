@@ -133,18 +133,25 @@ suite('variable', function () {
     test('definition', function () {
         var env = {};
         var result = scheem.eval(['define', 'x', 5], env);
-        assert.deepEqual(env, {'x': 5});
+        assert.deepEqual(env.bindings, {'x': 5});
         assert.deepEqual(result, 0);
     });
     test('Error: redefining', function () {
         assert.throws(function () {
-            scheem.eval(['define', 'x', 5], {'x': 5});
+            var env = { bindings: {'x': 5}, outer: null };
+            scheem.eval(['define', 'x', 5], env);
+        });
+    });
+    test('Error: redefining 2', function () {
+        assert.throws(function () {
+            var env = { };
+            scheem.eval(['begin', ['define', 'x', 5], ['define', 'x', 1]], env);
         });
     });
     test('setting', function () {
-        var env = {'x': 1};
+        var env = { bindings: {'x': 1}, outer: null };
         var result = scheem.eval(['set!', 'x', 5], env);
-        assert.deepEqual(env, {'x': 5});
+        assert.deepEqual(env.bindings, {'x': 5});
         assert.deepEqual(result, 0);
     });
     test('Error: setting when undefined', function () {
@@ -153,15 +160,15 @@ suite('variable', function () {
         });
     });
     test('overwriting', function () {
-        var env = {'x': 5};
+        var env = { bindings: {'x': 1}, outer: null };
         var result = scheem.eval(['set!', 'x', 10], env);
-        assert.deepEqual(env, {'x': 10});
+        assert.deepEqual(env.bindings, {'x': 10});
         assert.deepEqual(result, 0);
     });
     test('access', function () {
-        var env = {'x': 5};
+        var env = { bindings: {'x': 5}, outer: null };
         var result = scheem.eval(['+', 'x', 'x'], env);
-        assert.deepEqual(env, {'x': 5});
+        assert.deepEqual(env.bindings, {'x': 5});
         assert.deepEqual(result, 10);
     });
 });
@@ -169,19 +176,19 @@ suite('blocks', function () {
     test('empty block', function () {
         var env = {};
         var result = scheem.eval(['begin'], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, 0);
     });
     test('single expression block', function () {
         var env = {};
         var result = scheem.eval(['begin', ['+', 1, 2]], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, 3);
     });
     test('multiple expression block', function () {
         var env = {};
         var result = scheem.eval(['begin', ['define', 'x', 5], ['+', 'x', 2]], env);
-        assert.deepEqual(env, {'x': 5});
+        assert.deepEqual(env.bindings, {'x': 5});
         assert.deepEqual(result, 7);
     });
 });
@@ -219,43 +226,43 @@ suite('compare', function () {
     test('equality of 1 and 1', function () {
         var env = {};
         var result = scheem.eval(['=', 1, 1], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, '#t');
     });
     test('inequality of 1 and 2', function () {
         var env = {};
         var result = scheem.eval(['=', 1, 2], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, '#f');
     });
     test('equality of expressions', function () {
         var env = {};
         var result = scheem.eval(['=', ['+', 1, 1], ['/', 16, 8]], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, '#t');
     });
     test('equality of variables', function () {
-        var env = {'x': 5, 'y': 5};
+        var env = { bindings: {'x': 5, 'y': 5}, outer: null };
         var result = scheem.eval(['=', 'x', 'y'], env);
-        assert.deepEqual(env, {'x': 5, 'y': 5});
+        assert.deepEqual(env.bindings, {'x': 5, 'y': 5});
         assert.deepEqual(result, '#t');
     });
     test('5 is less than 6', function () {
         var env = {};
         var result = scheem.eval(['<', 5, 6], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, '#t');
     });
     test('4 is NOT less than 4', function () {
         var env = {};
         var result = scheem.eval(['<', 4, 4], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, '#f');
     });
     test('variable is less than expression', function () {
         var env = {};
         var result = scheem.eval(['begin', ['define', 'x', -1], ['<', 'x', ['*', 1, 2]]], env);
-        assert.deepEqual(env, {'x': -1});
+        assert.deepEqual(env.bindings, {'x': -1});
         assert.deepEqual(result, '#t');
     });
 });
@@ -263,19 +270,19 @@ suite('list manipulation', function () {
     test('get first element', function () {
         var env = {};
         var result = scheem.eval(['car', ['quote', [1, 2, 3]]], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, 1);
     });
     test('get tail', function () {
         var env = {};
         var result = scheem.eval(['cdr', ['quote', [1, 2, 3]]], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, [2, 3]);
     });
     test('concatenate', function () {
         var env = {};
         var result = scheem.eval(['cons', 1, ['quote', [2, 3]]], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, [1, 2, 3]);
     });
     test('cons car cdr', function () {
@@ -284,7 +291,7 @@ suite('list manipulation', function () {
                             , ['define', 'x', ['quote', [1, 2, 3]]]
                             , ['cons', ['car', 'x'], ['cdr', 'x']]
                             ], env);
-        assert.deepEqual(env, {'x': [1, 2, 3]});
+        assert.deepEqual(env.bindings, {'x': [1, 2, 3]});
         assert.deepEqual(result, [1, 2, 3]);
     });
     test('Error: cons with non-list', function () {
@@ -310,25 +317,25 @@ suite('conditional', function () {
     test('if true', function () {
         var env = {};
         var result = scheem.eval(['if', ['quote', '#t'], 1, 2], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, 1);
     });
     test('if false', function () {
         var env = {};
         var result = scheem.eval(['if', ['quote', '#f'], 1, 2], env);
-        assert.deepEqual(env, {});
+        assert.deepEqual(env.bindings, {});
         assert.deepEqual(result, 2);
     });
     test('define when true', function () {
         var env = {};
         var result = scheem.eval(['if', ['=', 1, 1], ['define', 'x', 1], ['define', 'y', 2]], env);
-        assert.deepEqual(env, {'x': 1});
+        assert.deepEqual(env.bindings, {'x': 1});
         assert.deepEqual(result, 0);
     });
     test('define when false', function () {
         var env = {};
         var result = scheem.eval(['if', ['=', 1, 2], ['define', 'x', 1], ['define', 'y', 2]], env);
-        assert.deepEqual(env, {'y': 2});
+        assert.deepEqual(env.bindings, {'y': 2});
         assert.deepEqual(result, 0);
     });
     test('Error: not enough parameters for if', function () {
@@ -413,7 +420,7 @@ suite('evaluate string', function () {
         var env = {};
         var result = scheem.evalString("(begin (define x 1) (define y 2) (set! x y) (+ y x))", env);
         assert.deepEqual(
-            env
+            env.bindings
             , {'x': 2, 'y': 2}
         );
         assert.deepEqual(
