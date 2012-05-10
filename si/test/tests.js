@@ -171,6 +171,14 @@ suite('variable', function () {
         assert.deepEqual(env.bindings, {'x': 5});
         assert.deepEqual(result, 10);
     });
+    test('shadowing', function () {
+        var result = scheem.eval(['begin', ['define', 'x', 1], ['let-one', 'x', 2, ['+', 'x', 0]]], {});
+        assert.deepEqual(result, 2);
+    });
+    test('un-shadowing', function () {
+        var result = scheem.eval(['begin', ['define', 'x', 1], ['let-one', 'x', 2, ['+', 'x', 0]], ['+', 'x', 0]], {});
+        assert.deepEqual(result, 1);
+    });
 });
 suite('blocks', function () {
     test('empty block', function () {
@@ -429,3 +437,65 @@ suite('evaluate string', function () {
         );
     });
 });
+
+suite('function application', function () {
+    test('double x (l-1)', function () {
+        var result = scheem.eval([
+                'begin', 
+                ['define', 'double', [
+                    'lambda-one', 'x', ['+', 'x', 'x']
+                ]], 
+                ['double', 5]]
+            , {});
+        assert.deepEqual(result, 10);
+    });
+    test('factorial x (l-1)', function () {
+        var result = scheem.eval([
+                'begin', 
+                ['define', 'factorial', [
+                    'lambda-one', 'x', [
+                        'if', ['=', 'x', 0]
+                            , 1
+                            , ['*', 'x', ['factorial', ['-', 'x', 1]]]
+                    ]
+                ]], 
+                ['factorial', 5]]
+            , {});
+        assert.deepEqual(result, 120);
+    });
+    test('always-three', function () {
+        var result = scheem.eval([
+                'begin', 
+                ['define', 'always-three', [
+                    'lambda', 3
+                ]], 
+                ['always-three', 5]]
+            , {});
+        assert.deepEqual(result, 3);
+    });
+    test('double x', function () {
+        var result = scheem.eval([
+                'begin', 
+                ['define', 'double', [
+                    'lambda', 'x', ['+', 'x', 'x']
+                ]], 
+                ['double', 5]]
+            , {});
+        assert.deepEqual(result, 10);
+    });
+    test('factorial x', function () {
+        var result = scheem.eval([
+                'begin', 
+                ['define', 'factorial', [
+                    'lambda', 'x', [
+                        'if', ['=', 'x', 0]
+                            , 1
+                            , ['*', 'x', ['factorial', ['-', 'x', 1]]]
+                    ]
+                ]], 
+                ['factorial', 5]]
+            , {});
+        assert.deepEqual(result, 120);
+    });
+});
+

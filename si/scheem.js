@@ -10,6 +10,13 @@ var scheem = scheem || {};
 // {} or { bindings: {'name': 'value'}, outer: parent_env }
 
 scheem.update = function (env, name, val) {
+    if (!env) {
+        // we probably tunnled all the way to outer = null
+        throw new Error("update failed; variable not defined: " + name);
+    }
+    if (!env.bindings) {
+        env.bindings = {};
+    }
     if (env && env.bindings) {
         if (env.bindings.hasOwnProperty(name)) {
             env.bindings[name] = val;
@@ -17,7 +24,6 @@ scheem.update = function (env, name, val) {
             scheem.update(env.outer, name, val);
         }
     } else {
-        throw new Error("update failed; variable not defined: " + name);
     }
 };
 
@@ -198,15 +204,36 @@ scheem.eval = function (expr, env) {
                 bnd[arg_name] = arg;
                 // note the lexical scoping
                 var newenv = {bindings: bnd, outer: env};
-                return evalScheem(body, newenv);
+                return scheem.eval(body, newenv);
+            };
+        case 'lambda':
+            // New code here
+            var args = expr.slice(1, expr.length - 1);
+            var body = expr[expr.length - 1];
+            return function () {
+                var bnd = {};
+                for (var i = 0; i < arguments.length; i++) {
+                    bnd[args[i]] = arguments[i];
+                }
+                // note the lexical scoping
+                var newenv = {bindings: bnd, outer: env};
+                return scheem.eval(body, newenv);
             };
         default:
             // application of functions
-            var expr0 = scheem.eval(expr[0], env);
-            if (typeof expr0 === 'function') {
-                var expr1 = scheem.eval(expr[1], env);
-                return expr0(expr1);
+            var fun = scheem.eval(expr[0], env);
+            if (typeof fun === 'function') {
+                var args = [];
+                for(var i = 1; i < expr.length; i++) {
+                    args.push(scheem.eval(expr[1], env));
+                }
+                return fun.apply(null, args);
             }
+            // var expr0 = scheem.eval(expr[0], env);
+            // if (typeof expr0 === 'function') {
+            //     var expr1 = scheem.eval(expr[1], env);
+            //     return expr0(expr1);
+            // }
     }
 };
 
