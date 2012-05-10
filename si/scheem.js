@@ -225,7 +225,7 @@ scheem.eval = function (expr, env) {
             if (typeof fun === 'function') {
                 var args = [];
                 for(var i = 1; i < expr.length; i++) {
-                    args.push(scheem.eval(expr[1], env));
+                    args.push(scheem.eval(expr[i], env));
                 }
                 return fun.apply(null, args);
             }

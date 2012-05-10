@@ -497,5 +497,15 @@ suite('function application', function () {
             , {});
         assert.deepEqual(result, 120);
     });
+    test('inject add-three', function () {
+        var env = {
+            bindings: {
+                'add-three': function (x, y, z) { return x + y + z; }
+            }
+            , outer: null
+        };
+        var result = scheem.eval(['add-three', 7, 8, 9], env);
+        assert.deepEqual(result, 24);
+    });
 });
 
