@@ -434,16 +434,6 @@ suite('function application', function () {
             );
         assert.deepEqual(result, 120);
     });
-    // test('inject add-three', function () {
-    //     var env = {
-    //         bindings: {
-    //             'add-three': function (x, y, z) { return x + y + z; }
-    //         }
-    //         , outer: null
-    //     };
-    //     var result = scheem.eval(['add-three', 7, 8, 9], env);
-    //     assert.deepEqual(result, 24);
-    // });
     test('call anonymouse square', function () {
         var result = scheem.eval([['lambda', 'x', ['*', 'x', 'x']], 4], {});
         assert.deepEqual(result, 16);
@@ -451,12 +441,15 @@ suite('function application', function () {
     test('scheem call anonymouse square', function () {
         var result = scheem.evalString("((lambda x (* x x)) 4)", {});
         assert.deepEqual(result, 16);
-    });
-    // test('scheem map', function () {
-    //     var env = {};
-    //     var result = scheem.evalString("(begin (define double x (* 2 x) (define map list ( (if (= list null) ) )))", env);
-    //     assert.deepEqual(result, [2, 3, 4]);
-    // });
-    
+    });    
 });
 
+suite('alert', function () {
+    test('say hello', function () {
+        scheem.eval(['alert', ['quote', 'hello']]);
+    });
+    test('hello from evalString', function () {
+        scheem.evalString("(alert 'hello-world)");
+    });
+
+});

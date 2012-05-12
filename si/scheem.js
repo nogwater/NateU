@@ -160,6 +160,13 @@ scheem.getDefaultBindings = function () {
             }
             list.splice(0, 1);
             return list;
+        }, 
+        'alert': function (message) {
+            if (typeof console === 'object' && typeof console.log === 'function') {
+                console.log(message);
+            } else if (typeof alert === 'function') {
+                alert(message);
+            }
         }
     };
 };
