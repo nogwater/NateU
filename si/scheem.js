@@ -51,6 +51,54 @@ scheem.getDefaultBindings = function () {
                 s += arg;
             }
             return s;
+        },
+        '-': function () {
+            if (arguments.length === 0) {
+                throw new Error ("'-' requires at least one arg");
+            }
+            if (typeof arguments[0] !== 'number') {
+                throw new Error ("can't use '-' with non-number");
+            }
+            var result = arguments[0];
+            for (var i = 1; i < arguments.length; i++) {
+                var arg = arguments[i];
+                if (typeof arg !== 'number') {
+                throw new Error ("can't use '-' with non-number");
+                }
+                result -= arg;
+            }
+            return result;
+        },
+        '*': function () {
+            var result = 1;
+            for (var i = 0; i < arguments.length; i++) {
+                var arg = arguments[i];
+                if (typeof arg !== 'number') {
+                    throw new Error ("can't use '*' with non-number")
+                }
+                result *= arg;
+            }
+            return result;
+        },
+        '/': function () {
+            if (arguments.length === 0) {
+                throw new Error ("'/' requires at least one arg");
+            }
+            if (typeof arguments[0] !== 'number') {
+                throw new Error ("can't use '/' with non-number");
+            }
+            var result = arguments[0];
+            for (var i = 1; i < arguments.length; i++) {
+                var arg = arguments[i];
+                if (typeof arg !== 'number') {
+                    throw new Error ("can't use '/' with non-number");
+                }
+                if (arg === 0) {
+                    throw new Error("can't divide by zero");
+                }
+                result /= arg;
+            }
+            return result;
         }
     };
 };
@@ -81,49 +129,6 @@ scheem.eval = function (expr, env) {
     }
     // Look at head of list for operation
     switch (expr[0]) {
-        // case '+':
-        //     if (expr.length !== 3) {
-        //         throw new Error("'+' expects exactly two parameters");
-        //     }
-        //     left = scheem.eval(expr[1], env);
-        //     right = scheem.eval(expr[2], env);
-        //     if (typeof left !== 'number' || typeof right != 'number') {
-        //         throw new Error("'+' requires two numbers");
-        //     }
-        //     return left + right;
-        case '-':
-            if (expr.length !== 3) {
-                throw new Error("'-' expects exactly two parameters");
-            }
-            left = scheem.eval(expr[1], env);
-            right = scheem.eval(expr[2], env);
-            if (typeof left !== 'number' || typeof right != 'number') {
-                throw new Error("'-' requires two numbers");
-            }
-            return left - right;
-        case '*':
-            if (expr.length !== 3) {
-                throw new Error("'*' expects exactly two parameters");
-            }
-            left = scheem.eval(expr[1], env);
-            right = scheem.eval(expr[2], env);
-            if (typeof left !== 'number' || typeof right != 'number') {
-                throw new Error("'*' requires two numbers");
-            }
-            return left * right;
-        case '/':
-            if (expr.length !== 3) {
-                throw new Error("'/' expects exactly two parameters");
-            }
-            left = scheem.eval(expr[1], env);
-            right = scheem.eval(expr[2], env);
-            if (typeof left !== 'number' || typeof right != 'number') {
-                throw new Error("'/' requires two numbers");
-            }
-            if (right === 0) {
-                throw new Error("can't divide by zero");
-            }
-            return left / right;
         case 'define':
             if (expr.length !== 3) {
                 throw new Error("define expects exactly two parameters");

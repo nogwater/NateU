@@ -49,6 +49,12 @@ suite('add', function() {
     });
 });
 suite('subtract', function () {
+    test('one number', function () {
+        assert.deepEqual(
+            scheem.eval(['-', 5])
+            , 5
+        );
+    });
     test('two numbers', function () {
         assert.deepEqual(
             scheem.eval(['-', 5, 1])
@@ -63,16 +69,17 @@ suite('subtract', function () {
     });
     test('Error: not enough parameters', function() {
         assert.throws(function () {
-            scheem.eval(['-', 1]);
-        });
-    });
-    test('Error: too many parameters', function() {
-        assert.throws(function () {
-            scheem.eval(['-', 1, 2, 3]);
+            scheem.eval(['-']);
         });
     });
 });
 suite('multiplication', function () {
+    test('one number', function () {
+        assert.deepEqual(
+            scheem.eval(['*', 3])
+            , 3
+        );
+    });
     test('two numbers', function () {
         assert.deepEqual(
             scheem.eval(['*', 3, 4])
@@ -84,16 +91,6 @@ suite('multiplication', function () {
             scheem.eval(['*', ['*', 3, 3], ['*', 3, 3]])
             , 81
         );
-    });
-    test('Error: not enough parameters', function() {
-        assert.throws(function () {
-            scheem.eval(['*', 1]);
-        });
-    });
-    test('Error: too many parameters', function() {
-        assert.throws(function () {
-            scheem.eval(['*', 1, 2, 3]);
-        });
     });
 });
 suite('division', function () {
@@ -111,12 +108,7 @@ suite('division', function () {
     });
     test('Error: not enough parameters', function() {
         assert.throws(function () {
-            scheem.eval(['/', 1]);
-        });
-    });
-    test('Error: too many parameters', function() {
-        assert.throws(function () {
-            scheem.eval(['/', 1, 2, 3]);
+            scheem.eval(['/']);
         });
     });
     test('Error: divide by zero', function() {
