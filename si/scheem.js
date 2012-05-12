@@ -39,16 +39,35 @@ scheem.lookup = function (env, name) {
     }
 };
 
+scheem.getDefaultBindings = function () {
+    return {
+        '+': function () {
+            var s = 0; // TODO: how would this work if we wanted + to do string concat too?
+            for (var i = 0; i < arguments.length; i++) {
+                var arg = arguments[i];
+                if (typeof arg !== 'number') {
+                    throw new Error ("can't use '+' with non-number")
+                }
+                s += arg;
+            }
+            return s;
+        }
+    };
+};
+
 
 scheem.eval = function (expr, env) {
     var name, value, result, i, element, list, left, right;
 
-    if (typeof env !== 'object') {
-        throw new Error("scheem.eval requires an env object");
-    }
+    // if (typeof env !== 'object') {
+    //     throw new Error("scheem.eval requires an env object");
+    // }
+    if (!env) {
+        env = { };
+    };
 
     if (!env.bindings) {
-        env.bindings = {};
+        env.bindings = scheem.getDefaultBindings();
         env.outer = null;
     }
 
@@ -62,16 +81,16 @@ scheem.eval = function (expr, env) {
     }
     // Look at head of list for operation
     switch (expr[0]) {
-        case '+':
-            if (expr.length !== 3) {
-                throw new Error("'+' expects exactly two parameters");
-            }
-            left = scheem.eval(expr[1], env);
-            right = scheem.eval(expr[2], env);
-            if (typeof left !== 'number' || typeof right != 'number') {
-                throw new Error("'+' requires two numbers");
-            }
-            return left + right;
+        // case '+':
+        //     if (expr.length !== 3) {
+        //         throw new Error("'+' expects exactly two parameters");
+        //     }
+        //     left = scheem.eval(expr[1], env);
+        //     right = scheem.eval(expr[2], env);
+        //     if (typeof left !== 'number' || typeof right != 'number') {
+        //         throw new Error("'+' requires two numbers");
+        //     }
+        //     return left + right;
         case '-':
             if (expr.length !== 3) {
                 throw new Error("'-' expects exactly two parameters");
@@ -238,9 +257,6 @@ scheem.eval = function (expr, env) {
 };
 
 scheem.evalString = function (scheemString, env) {
-    if (!env) {
-        env = {};
-    };
     var ast = scheem.parse(scheemString);
     var result = scheem.eval(ast, env)
     return result;
