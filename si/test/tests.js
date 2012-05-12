@@ -507,5 +507,19 @@ suite('function application', function () {
         var result = scheem.eval(['add-three', 7, 8, 9], env);
         assert.deepEqual(result, 24);
     });
+    test('call anonymouse square', function () {
+        var result = scheem.eval([['lambda', 'x', ['*', 'x', 'x']], 4], {});
+        assert.deepEqual(result, 16);
+    });
+    test('scheem call anonymouse square', function () {
+        var result = scheem.evalString("((lambda x (* x x)) 4)", {});
+        assert.deepEqual(result, 16);
+    });
+    // test('scheem map', function () {
+    //     var env = {};
+    //     var result = scheem.evalString("(begin (define double x (* 2 x) (define map list ( (if (= list null) ) )))", env);
+    //     assert.deepEqual(result, [2, 3, 4]);
+    // });
+    
 });
 
