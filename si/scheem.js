@@ -99,6 +99,67 @@ scheem.getDefaultBindings = function () {
                 result /= arg;
             }
             return result;
+        }, 
+        '=': function () {
+            // true if all args are equal to first
+            if (arguments.length < 2) {
+                throw new Error("'=' expects at least two parameters");
+            }
+            var first = arguments[0];
+            for (var i = 1; i < arguments.length; i++) {
+                var arg = arguments[i];
+                if (first !== arg) {
+                    return '#f';
+                }
+            }
+            return '#t';
+        }, 
+        '<': function () {
+            // true if arguments are increasing
+            if (arguments.length < 2) {
+                throw new Error("'<' expects at least two parameters");
+            }
+            for (var i = 0; i < arguments.length - 1; i++) {
+                var curr = arguments[i + 0];
+                var next = arguments[i + 1];
+                if (curr >= next) {
+                    return '#f';
+                }
+            }
+            return '#t';
+        }, 
+        'cons': function () {
+            if (arguments.length !== 2) {
+                throw new Error("cons expects exactly two parameters");
+            }
+            var element = arguments[0];
+            var list = arguments[1];
+            if (list.constructor.name !== 'Array') {
+                throw new Error("cons requires second parameter to be a list");
+            }
+            list.splice(0, 0, element);
+            return list;
+        }, 
+        'car': function () {
+            if (arguments.length !== 1) {
+                throw new Error("car expects exactly one argument");
+            }
+            var list = arguments[0];
+            if (list.constructor.name !== 'Array') {
+                throw new Error("car requires argument to be a list");
+            }
+            return list[0];
+        }, 
+        'cdr': function() {
+            if (arguments.length !== 1) {
+                throw new Error("car expects exactly one argument");
+            }
+            var list = arguments[0];
+            if (list.constructor.name !== 'Array') {
+                throw new Error("car requires argument to be a list");
+            }
+            list.splice(0, 1);
+            return list;
         }
     };
 };
@@ -159,53 +220,6 @@ scheem.eval = function (expr, env) {
                 throw new Error("quote requires exactly one parameter");
             }
             return expr[1];
-        case '=':
-            if (expr.length !== 3) {
-                throw new Error("'=' expects exactly two parameters");
-            }
-            if (scheem.eval(expr[1], env) === scheem.eval(expr[2], env)) {
-                return '#t';
-            }
-            return '#f';
-        case '<':
-            if (expr.length !== 3) {
-                throw new Error("'<' expects exactly two parameters");
-            }
-            if (scheem.eval(expr[1], env) < scheem.eval(expr[2], env)) {
-                return '#t';
-            }
-            return '#f';
-        case 'cons':
-            if (expr.length !== 3) {
-                throw new Error("cons expects exactly two parameters");
-            }
-            element = scheem.eval(expr[1], env);
-            list = scheem.eval(expr[2], env);
-            if (list.constructor.name !== 'Array') {
-                throw new Error("cons requires second parameter to be a list");
-            }
-            list.splice(0, 0, element);
-            return list;
-        case 'car':
-            if (expr.length !== 2) {
-                throw new Error("car expects exactly one parameter");
-            }
-            list = scheem.eval(expr[1], env);
-            if (list.constructor.name !== 'Array') {
-                throw new Error("car requires parameter to be a list");
-            }
-            result = list[0];
-            return result;
-        case 'cdr':
-            if (expr.length !== 2) {
-                throw new Error("cdr expects exactly one parameter");
-            }
-            list = scheem.eval(expr[1], env);
-            if (list.constructor.name !== 'Array') {
-                throw new Error("cdr requires parameter to be a list");
-            }
-            list.splice(0, 1);
-            return list;
         case 'if':
             if (expr.length !== 4) {
                 throw new Error("if expects exactly three parameter");
@@ -214,22 +228,14 @@ scheem.eval = function (expr, env) {
                 return scheem.eval(expr[2], env);
             }
             return scheem.eval(expr[3], env);
-        case 'let-one':
+        case 'let':
             var bnds = {};
-            bnds[expr[1]] = scheem.eval(expr[2], env);
+            // adds pairs of name/values
+            for (var i = 1; i < expr.length - 1; i += 2) {
+                bnds[expr[i]] = scheem.eval(expr[i+1], env);
+            }
             var new_env = {bindings: bnds, outer: env};
             return scheem.eval(expr[3], new_env);
-        case 'lambda-one':
-            // New code here
-            var arg_name = expr[1];
-            var body = expr[2];
-            return function (arg) {
-                var bnd = {};
-                bnd[arg_name] = arg;
-                // note the lexical scoping
-                var newenv = {bindings: bnd, outer: env};
-                return scheem.eval(body, newenv);
-            };
         case 'lambda':
             // New code here
             var args = expr.slice(1, expr.length - 1);
@@ -253,11 +259,6 @@ scheem.eval = function (expr, env) {
                 }
                 return fun.apply(null, args);
             }
-            // var expr0 = scheem.eval(expr[0], env);
-            // if (typeof expr0 === 'function') {
-            //     var expr1 = scheem.eval(expr[1], env);
-            //     return expr0(expr1);
-            // }
     }
 };
 

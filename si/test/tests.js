@@ -130,7 +130,7 @@ suite('variable', function () {
     });
     test('Error: redefining 2', function () {
         assert.throws(function () {
-            scheem.eval(['begin', ['define', 'x', 5], ['define', 'x', 1]], { });
+            scheem.eval(['begin', ['define', 'x', 5], ['define', 'x', 1]]);
         });
     });
     test('setting', function () {
@@ -139,15 +139,19 @@ suite('variable', function () {
     });
     test('Error: setting when undefined', function () {
         assert.throws(function () {
-            scheem.eval(['set!', 'x', 5], {});
+            scheem.eval(['set!', 'x', 5]);
         });
     });
     test('shadowing', function () {
-        var result = scheem.eval(['begin', ['define', 'x', 1], ['let-one', 'x', 2, 'x']], {});
+        var result = scheem.eval(['begin', ['define', 'x', 1], ['let', 'x', 2, 'x']]);
         assert.deepEqual(result, 2);
     });
+    test('double shadowing', function () {
+        var result = scheem.eval(['begin', ['define', 'x', 1], ['define', 'y', 1], ['let', 'x', 2, 'y', 3, 'y']]);
+        assert.deepEqual(result, 3);
+    });
     test('un-shadowing', function () {
-        var result = scheem.eval(['begin', ['define', 'x', 1], ['let-one', 'x', 2, ['+', 'x', 0]], 'x'], {});
+        var result = scheem.eval(['begin', ['define', 'x', 1], ['let', 'x', 2, ['+', 'x', 0]], 'x']);
         assert.deepEqual(result, 1);
     });
 });
@@ -204,6 +208,10 @@ suite('compare', function () {
         var result = scheem.eval(['=', 1, 2]);
         assert.deepEqual(result, '#f');
     });
+    test('equality of 3 and 3 and 3', function () {
+        var result = scheem.eval(['=', 3, 3, 3]);
+        assert.deepEqual(result, '#t');
+    });
     test('equality of expressions', function () {
         var result = scheem.eval(['=', ['+', 1, 1], ['/', 16, 8]]);
         assert.deepEqual(result, '#t');
@@ -214,6 +222,10 @@ suite('compare', function () {
     });
     test('5 is less than 6', function () {
         var result = scheem.eval(['<', 5, 6]);
+        assert.deepEqual(result, '#t');
+    });
+    test('7 < 8 < 9', function () {
+        var result = scheem.eval(['<', 7, 8, 9]);
         assert.deepEqual(result, '#t');
     });
     test('4 is NOT less than 4', function () {
@@ -368,7 +380,7 @@ suite('function application', function () {
         var result = scheem.eval([
                 'begin', 
                 ['define', 'double', [
-                    'lambda-one', 'x', ['+', 'x', 'x']
+                    'lambda', 'x', ['+', 'x', 'x']
                 ]], 
                 ['double', 5]]
             );
@@ -378,7 +390,7 @@ suite('function application', function () {
         var result = scheem.eval([
                 'begin', 
                 ['define', 'factorial', [
-                    'lambda-one', 'x', [
+                    'lambda', 'x', [
                         'if', ['=', 'x', 0]
                             , 1
                             , ['*', 'x', ['factorial', ['-', 'x', 1]]]
