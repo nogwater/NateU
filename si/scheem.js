@@ -39,152 +39,154 @@ scheem.lookup = function (env, name) {
     }
 };
 
-scheem.getDefaultBindings = function () {
-    return {
-        '+': function () {
-            var s = 0; // TODO: how would this work if we wanted + to do string concat too?
-            for (var i = 0; i < arguments.length; i++) {
-                var arg = arguments[i];
-                if (typeof arg !== 'number') {
-                    throw new Error ("can't use '+' with non-number")
-                }
-                s += arg;
+scheem.standardLibrary = {
+    '+': function () {
+        var s = 0; // TODO: how would this work if we wanted + to do string concat too?
+        for (var i = 0; i < arguments.length; i++) {
+            var arg = arguments[i];
+            if (typeof arg !== 'number') {
+                throw new Error ("can't use '+' with non-number")
             }
-            return s;
-        },
-        '-': function () {
-            if (arguments.length === 0) {
-                throw new Error ("'-' requires at least one arg");
+            s += arg;
+        }
+        return s;
+    },
+    '-': function () {
+        if (arguments.length === 0) {
+            throw new Error ("'-' requires at least one arg");
+        }
+        if (typeof arguments[0] !== 'number') {
+            throw new Error ("can't use '-' with non-number");
+        }
+        var result = arguments[0];
+        for (var i = 1; i < arguments.length; i++) {
+            var arg = arguments[i];
+            if (typeof arg !== 'number') {
+            throw new Error ("can't use '-' with non-number");
             }
-            if (typeof arguments[0] !== 'number') {
-                throw new Error ("can't use '-' with non-number");
+            result -= arg;
+        }
+        return result;
+    },
+    '*': function () {
+        var result = 1;
+        for (var i = 0; i < arguments.length; i++) {
+            var arg = arguments[i];
+            if (typeof arg !== 'number') {
+                throw new Error ("can't use '*' with non-number")
             }
-            var result = arguments[0];
-            for (var i = 1; i < arguments.length; i++) {
-                var arg = arguments[i];
-                if (typeof arg !== 'number') {
-                throw new Error ("can't use '-' with non-number");
-                }
-                result -= arg;
-            }
-            return result;
-        },
-        '*': function () {
-            var result = 1;
-            for (var i = 0; i < arguments.length; i++) {
-                var arg = arguments[i];
-                if (typeof arg !== 'number') {
-                    throw new Error ("can't use '*' with non-number")
-                }
-                result *= arg;
-            }
-            return result;
-        },
-        '/': function () {
-            if (arguments.length === 0) {
-                throw new Error ("'/' requires at least one arg");
-            }
-            if (typeof arguments[0] !== 'number') {
+            result *= arg;
+        }
+        return result;
+    },
+    '/': function () {
+        if (arguments.length === 0) {
+            throw new Error ("'/' requires at least one arg");
+        }
+        if (typeof arguments[0] !== 'number') {
+            throw new Error ("can't use '/' with non-number");
+        }
+        var result = arguments[0];
+        for (var i = 1; i < arguments.length; i++) {
+            var arg = arguments[i];
+            if (typeof arg !== 'number') {
                 throw new Error ("can't use '/' with non-number");
             }
-            var result = arguments[0];
-            for (var i = 1; i < arguments.length; i++) {
-                var arg = arguments[i];
-                if (typeof arg !== 'number') {
-                    throw new Error ("can't use '/' with non-number");
-                }
-                if (arg === 0) {
-                    throw new Error("can't divide by zero");
-                }
-                result /= arg;
+            if (arg === 0) {
+                throw new Error("can't divide by zero");
             }
-            return result;
-        }, 
-        '=': function () {
-            // true if all args are equal to first
-            if (arguments.length < 2) {
-                throw new Error("'=' expects at least two parameters");
-            }
-            var first = arguments[0];
-            for (var i = 1; i < arguments.length; i++) {
-                var arg = arguments[i];
-                if (first !== arg) {
-                    return '#f';
-                }
-            }
-            return '#t';
-        }, 
-        '<': function () {
-            // true if arguments are increasing
-            if (arguments.length < 2) {
-                throw new Error("'<' expects at least two parameters");
-            }
-            for (var i = 0; i < arguments.length - 1; i++) {
-                var curr = arguments[i + 0];
-                var next = arguments[i + 1];
-                if (curr >= next) {
-                    return '#f';
-                }
-            }
-            return '#t';
-        }, 
-        'cons': function () {
-            if (arguments.length !== 2) {
-                throw new Error("cons expects exactly two parameters");
-            }
-            var element = arguments[0];
-            var list = arguments[1];
-            if (list.constructor.name !== 'Array') {
-                throw new Error("cons requires second parameter to be a list");
-            }
-            list.splice(0, 0, element);
-            return list;
-        }, 
-        'car': function () {
-            if (arguments.length !== 1) {
-                throw new Error("car expects exactly one argument");
-            }
-            var list = arguments[0];
-            if (list.constructor.name !== 'Array') {
-                throw new Error("car requires argument to be a list");
-            }
-            return list[0];
-        }, 
-        'cdr': function() {
-            if (arguments.length !== 1) {
-                throw new Error("car expects exactly one argument");
-            }
-            var list = arguments[0];
-            if (list.constructor.name !== 'Array') {
-                throw new Error("car requires argument to be a list");
-            }
-            list.splice(0, 1);
-            return list;
-        }, 
-        'alert': function (message) {
-            if (typeof console === 'object' && typeof console.log === 'function') {
-                console.log(message);
-            } else if (typeof alert === 'function') {
-                alert(message);
+            result /= arg;
+        }
+        return result;
+    }, 
+    '=': function () {
+        // true if all args are equal to first
+        if (arguments.length < 2) {
+            throw new Error("'=' expects at least two parameters");
+        }
+        var first = arguments[0];
+        for (var i = 1; i < arguments.length; i++) {
+            var arg = arguments[i];
+            if (first !== arg) {
+                return '#f';
             }
         }
-    };
+        return '#t';
+    }, 
+    '<': function () {
+        // true if arguments are increasing
+        if (arguments.length < 2) {
+            throw new Error("'<' expects at least two parameters");
+        }
+        for (var i = 0; i < arguments.length - 1; i++) {
+            var curr = arguments[i + 0];
+            var next = arguments[i + 1];
+            if (curr >= next) {
+                return '#f';
+            }
+        }
+        return '#t';
+    }, 
+    'cons': function () {
+        if (arguments.length !== 2) {
+            throw new Error("cons expects exactly two parameters");
+        }
+        var element = arguments[0];
+        var list = arguments[1];
+        if (list.constructor.name !== 'Array') {
+            throw new Error("cons requires second parameter to be a list");
+        }
+        list.splice(0, 0, element);
+        return list;
+    }, 
+    'car': function () {
+        if (arguments.length !== 1) {
+            throw new Error("car expects exactly one argument");
+        }
+        var list = arguments[0];
+        if (list.constructor.name !== 'Array') {
+            throw new Error("car requires argument to be a list");
+        }
+        return list[0];
+    }, 
+    'cdr': function() {
+        if (arguments.length !== 1) {
+            throw new Error("car expects exactly one argument");
+        }
+        var list = arguments[0];
+        if (list.constructor.name !== 'Array') {
+            throw new Error("car requires argument to be a list");
+        }
+        list.splice(0, 1);
+        return list;
+    }, 
+    'alert': function (message) {
+        if (typeof console === 'object' && typeof console.log === 'function') {
+            console.log(message);
+        } else if (typeof alert === 'function') {
+            alert(message);
+        }
+    }
 };
 
+scheem.injectStandardLibrary = function (bindings) {
+    for (var name in scheem.standardLibrary) {
+        if (scheem.standardLibrary.hasOwnProperty(name)) {
+            bindings[name] = scheem.standardLibrary[name];
+        }
+    }
+};
 
 scheem.eval = function (expr, env) {
     var name, value, result, i, element, list, left, right;
 
-    // if (typeof env !== 'object') {
-    //     throw new Error("scheem.eval requires an env object");
-    // }
     if (!env) {
         env = { };
     };
 
     if (!env.bindings) {
-        env.bindings = scheem.getDefaultBindings();
-        env.outer = null;
+        env.bindings = {};
+        scheem.injectStandardLibrary(env.bindings);
     }
 
     // Numbers evaluate to themselves
