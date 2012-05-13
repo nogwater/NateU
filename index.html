@@ -6,12 +6,25 @@
 <body>
 <div id="editor">
 	<h2>Scheem</h2>
-	<textarea id="source" cols="80" rows="30">
+	<!-- 
 (begin
 	(define x 1)
 	(define y 2)
 	(set! x y)
 	(+ y x)
+)
+	 -->
+	<textarea id="source" cols="80" rows="30">
+(begin
+	(define factorial
+		(lambda n
+			(if (= n 0)
+				1
+				(* n (factorial (- n 1)))
+			)
+		)
+	)
+	(factorial 15)
 )
 	</textarea><br />
 	<input id="parse" type="button" value="Parse" />&nbsp;
@@ -23,10 +36,11 @@
 	</div>
 </div>
 <div id="footer">
-	Built for Lesson 4 of PL101 at <a href="http://nathansuniversity.com/">Nathan's University</a>.<br />
+	Built for Lesson 4 and 5 of PL101 at <a href="http://nathansuniversity.com/">Nathan's University</a>.<br />
 	Source available at <a href="https://github.com/nogwater/NateU">github.com/nogwater/NateU</a>.<br />
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="./parser.js"></script>
 <script src="./scheem.js"></script>
 <script type="text/javascript">
 
