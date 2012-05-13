@@ -149,7 +149,7 @@ scheem.standardLibrary = {
         }
         return list[0];
     }, 
-    'cdr': function() {
+    'cdr': function () {
         if (arguments.length !== 1) {
             throw new Error("car expects exactly one argument");
         }
@@ -266,7 +266,7 @@ scheem.eval = function (expr, env) {
                 for(var i = 1; i < expr.length; i++) {
                     args.push(scheem.eval(expr[i], env));
                 }
-                return fun.apply(null, args);
+                return fun.apply(env, args);
             }
     }
 };
